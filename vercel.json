@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/АРТ-ХОР — школьный старт.html" }
+  ]
+}

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Комплекс распевок на каждый день</title>
+  <style>
+    body{max-width:820px;margin:0 auto;padding:36px 24px 70px;background:white;color:#193453;font:16px/1.7 Arial,sans-serif}h1,h2{line-height:1.2;color:#12315f}h1{font-size:38px}header{border-bottom:4px solid #df493f;margin-bottom:28px}.tag{color:#1658a8;font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:.12em}.box{padding:16px 20px;background:#eaf5ff;border-left:4px solid #1658a8}.exercise{padding:20px 0;border-bottom:1px solid #d9e6f2}.exercise h2{margin:0 0 7px;font-size:21px}.exercise p{margin:5px 0}.note{color:#61718a;font-size:14px}.tools{display:flex;gap:12px;margin-bottom:30px}button,.tools a{padding:10px 15px;border:0;border-radius:6px;background:#1658a8;color:#fff;text-decoration:none;cursor:pointer}button:hover,.tools a:hover{background:#12315f}button:disabled{opacity:.5;cursor:default}@media print{body{max-width:none;padding:0;font-size:12pt}.tools,.play{display:none}.exercise{break-inside:avoid}}
+  </style>
+</head>
+<body>
+  <div class="tools"><a href="index.html#method">← На сайт</a><button type="button" onclick="window.print()">Печать / сохранить как PDF</button></div>
+  <header><p class="tag">Школьные хоры · Практика</p><h1>Комплекс распевок на каждый день</h1><p>Восемь упражнений для разогрева голоса. Продолжительность полного комплекса: 10–15 минут. Звуковые кнопки воспроизводят ориентир по высоте, а не запись детского голоса.</p></header>
+  <p class="box">Начинайте тихо, в комфортной тесситуре класса. Переносите мелодию выше или ниже по необходимости. При напряжении, боли или охриплости остановитесь. Звуковые подсказки работают в современном браузере после нажатия кнопки.</p>
+  <article class="exercise"><h2>1. Ровный выдох</h2><p>Вдохните спокойно носом. Выдыхайте на «с» четыре счёта; повторите 3 раза, затем на «ш». Не задерживайте дыхание.</p><p class="note">Без звукового сопровождения · 1 минута</p></article>
+  <article class="exercise"><h2>2. Мягкое гудение</h2><p>На удобной ноте пропойте «м-м-м», ощущая лёгкую вибрацию губ. Повторите 3–4 раза без усилия.</p><button class="play" data-notes="0,0,0" type="button">▶ Слушать ориентир</button></article>
+  <article class="exercise"><h2>3. Три ступени</h2><p>Пропойте «ми-мэ-ма» по схеме 1–2–3–2–1. Петь связно и не повышать громкость на вершине.</p><button class="play" data-notes="0,2,4,2,0" type="button">▶ Слушать мелодию</button></article>
+  <article class="exercise"><h2>4. Вопрос и ответ</h2><p>Педагог поёт «ку-ку» на двух звуках, дети отвечают тем же мотивом. Можно разделить хор пополам.</p><button class="play" data-notes="4,0,4,0" type="button">▶ Слушать мелодию</button></article>
+  <article class="exercise"><h2>5. Лесенка вниз</h2><p>На слоге «лу» пропойте пять соседних ступеней вниз, по одному звуку на слог. Сохраняйте мягкую атаку.</p><button class="play" data-notes="7,5,4,2,0" type="button">▶ Слушать мелодию</button></article>
+  <article class="exercise"><h2>6. Легато на «а»</h2><p>Соедините 1–3–5–3–1 одним плавным выдохом, не вытягивая последнюю ноту силой.</p><button class="play" data-notes="0,4,7,4,0" type="button">▶ Слушать мелодию</button></article>
+  <article class="exercise"><h2>7. Чёткие согласные</h2><p>Пропойте «да-да-да» на трёх звуках; затем повторите на «та-та-та». Дикция чёткая, челюсть свободна.</p><button class="play" data-notes="0,2,4,2,0" type="button">▶ Слушать мелодию</button></article>
+  <article class="exercise"><h2>8. Общее окончание</h2><p>Хор поёт короткую фразу «мы поём» по жесту педагога и вместе снимает звук. Повторите с тихой и умеренной динамикой.</p><button class="play" data-notes="0,2,4,0" type="button">▶ Слушать мелодию</button></article>
+  <script>
+    let audioContext;
+    document.querySelectorAll('.play').forEach(button => button.addEventListener('click', async () => {
+      audioContext ??= new (window.AudioContext || window.webkitAudioContext)();
+      await audioContext.resume();
+      const notes = button.dataset.notes.split(',').map(Number);
+      const start = audioContext.currentTime + .05;
+      notes.forEach((offset, index) => {
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        const at = start + index * .5;
+        oscillator.type = 'sine';
+        oscillator.frequency.value = 261.63 * 2 ** (offset / 12);
+        gain.gain.setValueAtTime(.0001, at);
+        gain.gain.exponentialRampToValueAtTime(.12, at + .04);
+        gain.gain.exponentialRampToValueAtTime(.0001, at + .43);
+        oscillator.connect(gain).connect(audioContext.destination);
+        oscillator.start(at);
+        oscillator.stop(at + .45);
+      });
+      button.disabled = true;
+      setTimeout(() => { button.disabled = false; }, notes.length * 500);
+    }));
+  </script>
+</body>
+</html>
